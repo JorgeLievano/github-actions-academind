@@ -1,5 +1,13 @@
-name: Deploy-S3
-on: [push, workflow_dispatch]
+name: Deploy-S4
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+  push: 
+    branches: 
+      - main
+  workflow_dispatch:
 jobs:
   validate:
     runs-on: ubuntu-latest
