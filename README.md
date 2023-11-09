@@ -22,3 +22,4 @@ Update the deploy workflow to to met the following requirements:
 1. Add a new job to build the application and upload the artifacts to the workflow build artifacts space.
 2. Download the artifacts in the deploy job and print out the content of the current directory.
 3. Use jobs ouputs to get the JS file name from the artifact produced in the build job and print out that value in the deploy job.
+4. Use cache for dependencies.
