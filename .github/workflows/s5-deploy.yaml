@@ -11,7 +11,7 @@ on:
     paths: Reactjs-simple-help-webpage/**
   workflow_dispatch:
 env:  
-  help-webapp-working-directory: Reactjs-simple-help-webpage
+  project_dir: Reactjs-simple-help-webpage
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -21,13 +21,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          sparse-checkout: ${{env.help-webapp-working-directory}}
+          sparse-checkout: ${{env.project_dir}}
       - name: Move project to root
         run: |
           ls -lah
           shopt -s dotglob
-          mv $help-webapp-working-directory/* .
-          rm -rf $help-webapp-working-directory
+          mv $project_dir/* .
+          rm -rf $project_dir
           ls -lah
       - name: Install NodeJS
         uses: actions/setup-node@v3
@@ -60,13 +60,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          sparse-checkout: ${{env.help-webapp-working-directory}}
+          sparse-checkout: ${{env.project_dir}}
       - name: Move project to root
         run: |
           ls -lah
           shopt -s dotglob
-          mv $help-webapp-working-directory/* .
-          rm -rf $help-webapp-working-directory
+          mv $project_dir/* .
+          rm -rf $project_dir
           ls -lah
       - name: Install NodeJS
         uses: actions/setup-node@v3
