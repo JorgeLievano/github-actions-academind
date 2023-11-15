@@ -1,0 +1,64 @@
+name: Deployment Demo API
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+    paths: Node-demo-api/**
+  push:
+    branches:
+      - main
+      - dev
+    paths: Node-demo-api/**
+  workflow_dispatch:
+env:
+  project_dir: Node-demo-api
+jobs:
+  test:
+    environment: testing
+    env:
+      MONGODB_DB_NAME: ${{ vars.MONGODB_DB_NAME }}
+      MONGODB_CLUSTER_ADDRESS: ${{ secrets.MONGODB_CLUSTER_ADDRESS }}
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+      PORT: ${{ vars.PORT }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: ${{env.project_dir}}
+      - name: Move project to root
+        run: |
+          ls -lah
+          shopt -s dotglob
+          mv $project_dir/* .
+          rm -rf $project_dir
+          ls -lah
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - uses: actions/cache@v3
+        name: npm cache
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm ci
+      - name: Run server
+        run: npm start & npx wait-on http://127.0.0.1:$PORT # requires MongoDB Atlas to accept requests from anywhere!
+      - name: Run tests
+        run: npm test
+      - name: Output information
+        run: echo "..."
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |        
+          echo "..."
