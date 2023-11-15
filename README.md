@@ -23,3 +23,11 @@ Update the deploy workflow to to met the following requirements:
 2. Download the artifacts in the deploy job and print out the content of the current directory.
 3. Use jobs ouputs to get the JS file name from the artifact produced in the build job and print out that value in the deploy job.
 4. Use cache for dependencies.
+
+### Section 6
+
+Use the environments feature to setup environment variables and secrets
+1. Create a new repository environment and declare it in the test job.
+2. Create the environment variables for the MONGODB_DB_NAME and PORT.
+3. Create environent secrets for the following values: MONGODB_CLUSTER_ADDRESS, MONGODB_USERNAME, and MONGODB_PASSWORD.
+4. Use the `env` block to declare the repository environment variables and secrets as job environment variables.

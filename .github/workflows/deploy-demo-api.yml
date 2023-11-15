@@ -1,4 +1,4 @@
-name: Deployment Demo API
+name: Deploy-Demo-API-S6
 on:
   pull_request:
     branches:
