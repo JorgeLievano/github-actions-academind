@@ -1,0 +1,107 @@
+name: Deploy-help-website-S7
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+    paths: Reactjs-simple-help-webpage/**
+  push: 
+    branches: 
+      - main
+    paths: Reactjs-simple-help-webpage/**
+  workflow_dispatch:
+env:  
+  project_dir: Reactjs-simple-help-webpage
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      npm-cache-dir: ${{ steps.npm-cache-dir.outputs.dir }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: ${{env.project_dir}}
+      - name: Move project to root
+        run: |
+          ls -lah
+          shopt -s dotglob
+          mv $project_dir/* .
+          rm -rf $project_dir
+          ls -lah
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - uses: actions/cache@v3
+        name: npm cache
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+      - name: Run tests
+        run: npm run test
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.jsFilename.outputs.script-file }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: ${{env.project_dir}}
+      - name: Move project to root
+        run: |
+          ls -lah
+          shopt -s dotglob
+          mv $project_dir/* .
+          rm -rf $project_dir
+          ls -lah
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        name: npm cache
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ needs.validate.outputs.npm-cache-dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Project
+        run: npm run build
+      - name: Publish JS filename
+        id: jsFilename
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/download-artifact@v3
+          with:
+            name: dist-files
+        - name: Output contents
+          run: ls
+        - name: Output JS filename
+          run: echo "${{ needs.build.outputs.script-file }}"
+        - name: Deploy
+          run: echo "Deploying...(TBD)"
