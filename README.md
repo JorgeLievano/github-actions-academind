@@ -36,5 +36,7 @@ Use the environments feature to setup environment variables and secrets
 
 Controlling workflow and job execution
 1. Add and step at the end of the validate job that takes care of uploading the test resports only when any test failed.
-2. Skip the install dependencies step if a compatible cache exists.
+2. Optimize cache
+    - Add the node_modules directory to cache.
+    - Skip the install dependencies step if a compatible cache exists.
 3. Add a new job that prints the github context variable only if some other job failed.
