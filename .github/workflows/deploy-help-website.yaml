@@ -41,7 +41,9 @@ jobs:
         name: npm cache
         id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
         with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          path: |
+            ${{ steps.npm-cache-dir.outputs.dir }}
+            node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -84,7 +86,9 @@ jobs:
         name: npm cache
         id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
         with:
-          path: ${{ needs.validate.outputs.npm-cache-dir }}
+          path: |
+            ${{ needs.validate.outputs.npm-cache-dir }}
+            node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
