@@ -31,3 +31,9 @@ Use the environments feature to setup environment variables and secrets
 2. Create the environment variables for the MONGODB_DB_NAME and PORT.
 3. Create environent secrets for the following values: MONGODB_CLUSTER_ADDRESS, MONGODB_USERNAME, and MONGODB_PASSWORD.
 4. Use the `env` block to declare the repository environment variables and secrets as job environment variables.
+
+### Section 7
+
+Controlling workflow and job execution
+1. Add and step at the end of the validate job that takes care of uploading the test resports only when any test failed.
+2. Add a new job that prints the github context variable only if some other job failed.
